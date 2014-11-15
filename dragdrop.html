@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+<style>
+.sourceBox { float: left; padding: 5px;}
+.targetBox { float: left; padding: 5px;}
+.label { text-align: center;}
+.sourceDrop {width:10em;height:1.5em;border:1px solid #aaaaaa;margin-left:auto; margin-right:auto;}
+.targetDrag {width:10em;height:1.5em;border:1px solid #aaaaaa; background-color: #FFFFFF;margin-left:auto; margin-right:auto;white-space: nowrap; overflow: hidden; text-overflow: clip;}
+.targetDropped {width:10em;height:1.4em;border:1px solid #aaaaaa; background-color: #FFFFFF;margin-left:auto; margin-right:auto;white-space: nowrap; overflow: hidden; text-overflow: clip;}
+</style>
+<script>
+function Init()
+{
+    var mappingSourceElement = document.getElementById('mapping-source');
+    
+    if (mappingSourceElement == null)
+    {
+        return;
+    }
+    
+    var mappingTargetElement = document.getElementById('mapping-target');
+    
+    if (mappingTargetElement == null)
+    {
+        return;
+    }
+
+    var sourceNames = GetSourceNames();
+    var sourceNamesLength = sourceNames.length;
+
+    if (sourceNamesLength <= 0)
+    {
+        return;
+    }
+    
+    var targetNames = GetTargetNames();
+    var targetNamesLength = targetNames.length;
+    
+    if (targetNamesLength <= 0)
+    {
+        return;
+    }
+
+    for (var i = 0; i < sourceNamesLength; i++)
+    {
+        var div = document.createElement('div');
+        
+        div.setAttribute("class", "sourceBox");
+
+        var dropDiv = document.createElement('div');
+        var labelBox = document.createElement('div');
+        var label = document.createTextNode(sourceNames[i]);
+
+        dropDiv.setAttribute("class", "sourceDrop");
+        dropDiv.setAttribute("ondrop", "Drop(event);");
+        dropDiv.setAttribute("ondragover", "AllowDrop(event);");
+        labelBox.setAttribute("class", "label");
+
+        labelBox.appendChild(label);
+        div.appendChild(labelBox);
+        div.appendChild(dropDiv);
+
+        mappingSourceElement.appendChild(div);
+    }
+
+    for (var i = 0; i < targetNamesLength; i++)
+    {
+        var div = document.createElement('div');
+        
+        div.setAttribute("class", "targetBox");
+    
+        var dragDiv = document.createElement('div');
+        var label = document.createTextNode((i + 1) + ": " + targetNames[i]);
+        var labelBox = document.createElement('div');
+        var caption = document.createTextNode((i + 1) + ": " + targetNames[i]);
+
+        dragDiv.setAttribute("id", "target_mapping_" + targetNames[i]);
+        dragDiv.setAttribute("class", "targetDrag");
+        dragDiv.setAttribute("draggable", "true");
+        dragDiv.setAttribute("ondragstart", "Drag(event);");
+        labelBox.setAttribute("class", "label");
+        
+        dragDiv.appendChild(caption);
+        labelBox.appendChild(label);
+        div.appendChild(labelBox);
+        div.appendChild(dragDiv);
+        
+        mappingTargetElement.appendChild(div);
+    }
+}
+
+
+function GetSourceNames()
+{
+    var sourceNames = ["chapter",
+                       "paragraph_default_asdf_jklö",
+                       "section",
+                       "subsection",
+                       "a",
+                       "b",
+                       "c",
+                       "d"];
+
+    return sourceNames;
+}
+
+function GetTargetNames()
+{
+    var targetNames = ["chapter",
+                       "paragraph_default_asdf_jklö",
+                       "section",
+                       "subsection"];
+
+    return targetNames;
+}
+
+function Drag(event)
+{
+    event.dataTransfer.setData("text", event.target.id);
+}
+
+function AllowDrop(event)
+{
+    event.preventDefault();
+}
+
+function Drop(event)
+{
+    event.preventDefault();
+    var data = event.dataTransfer.getData("text");
+    event.target.appendChild(document.getElementById(data));
+    document.getElementById(data).setAttribute("class", "targetDropped");
+    event.target.setAttribute("ondragover", "");
+}
+</script>
+</head>
+<body onload="Init();">
+<div id="mapping-source"></div>
+<hr style="clear: left;"/>
+<div id="mapping-target"></div>
+</body>
+</html>
