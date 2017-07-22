@@ -2,6 +2,21 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+<!--
+Copyright (C) 2014-2017 Stephan Kreutzer
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License version 3 or any later version,
+as published by the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Affero General Public License 3 for more details.
+
+You should have received a copy of the GNU Affero General Public License 3
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+-->
 <style>
 .sourceBox { float: left; padding: 5px;}
 .targetBox { float: left; padding: 5px;}
@@ -14,14 +29,14 @@
 function Init()
 {
     var mappingSourceElement = document.getElementById('mapping-source');
-    
+
     if (mappingSourceElement == null)
     {
         return;
     }
-    
+
     var mappingTargetElement = document.getElementById('mapping-target');
-    
+
     if (mappingTargetElement == null)
     {
         return;
@@ -34,10 +49,10 @@ function Init()
     {
         return;
     }
-    
+
     var targetNames = GetTargetNames();
     var targetNamesLength = targetNames.length;
-    
+
     if (targetNamesLength <= 0)
     {
         return;
@@ -46,13 +61,14 @@ function Init()
     for (var i = 0; i < sourceNamesLength; i++)
     {
         var div = document.createElement('div');
-        
+
         div.setAttribute("class", "sourceBox");
 
         var dropDiv = document.createElement('div');
         var labelBox = document.createElement('div');
         var label = document.createTextNode(sourceNames[i]);
 
+        dropDiv.setAttribute("id", "source_mapping_" + sourceNames[i]);
         dropDiv.setAttribute("class", "sourceDrop");
         dropDiv.setAttribute("ondrop", "Drop(event);");
         dropDiv.setAttribute("ondragover", "AllowDrop(event);");
@@ -68,9 +84,9 @@ function Init()
     for (var i = 0; i < targetNamesLength; i++)
     {
         var div = document.createElement('div');
-        
+
         div.setAttribute("class", "targetBox");
-    
+
         var dragDiv = document.createElement('div');
         var label = document.createTextNode((i + 1) + ": " + targetNames[i]);
         var labelBox = document.createElement('div');
@@ -81,12 +97,12 @@ function Init()
         dragDiv.setAttribute("draggable", "true");
         dragDiv.setAttribute("ondragstart", "Drag(event);");
         labelBox.setAttribute("class", "label");
-        
+
         dragDiv.appendChild(caption);
         labelBox.appendChild(label);
         div.appendChild(labelBox);
         div.appendChild(dragDiv);
-        
+
         mappingTargetElement.appendChild(div);
     }
 }
@@ -119,6 +135,18 @@ function GetTargetNames()
 function Drag(event)
 {
     event.dataTransfer.setData("text", event.target.id);
+
+    var sourceNames = GetSourceNames();
+    var sourceNamesLength = sourceNames.length;
+
+    for (var i = 0; i < sourceNamesLength; i++)
+    {
+        if ("source_mapping_" + sourceNames[i] == event.target.parentElement.id)
+        {
+            event.target.parentElement.setAttribute("ondragover", "AllowDrop(event)");
+            break;
+        }
+    }
 }
 
 function AllowDrop(event)
