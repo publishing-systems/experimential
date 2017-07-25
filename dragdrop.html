@@ -18,12 +18,12 @@ You should have received a copy of the GNU Affero General Public License 3
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 -->
 <style>
-.sourceBox { float: left; padding: 5px;}
 .targetBox { float: left; padding: 5px;}
+.sourceBox { float: left; padding: 5px;}
 .label { text-align: center;}
-.sourceDrop {width:10em;height:1.5em;border:1px solid #aaaaaa;margin-left:auto; margin-right:auto;}
-.targetDrag {width:10em;height:1.5em;border:1px solid #aaaaaa; background-color: #FFFFFF;margin-left:auto; margin-right:auto;white-space: nowrap; overflow: hidden; text-overflow: clip;}
-.targetDropped {width:10em;height:1.4em;border:1px solid #aaaaaa; background-color: #FFFFFF;margin-left:auto; margin-right:auto;white-space: nowrap; overflow: hidden; text-overflow: clip;}
+.targetDrop {width:10em;height:1.5em;border:1px solid #aaaaaa;margin-left:auto; margin-right:auto;}
+.sourceDrag {width:10em;height:1.5em;border:1px solid #aaaaaa; background-color: #FFFFFF;margin-left:auto; margin-right:auto;white-space: nowrap; overflow: hidden; text-overflow: clip;}
+.sourceDropped {width:10em;height:1.4em;border:1px solid #aaaaaa; background-color: #FFFFFF;margin-left:auto; margin-right:auto;white-space: nowrap; overflow: hidden; text-overflow: clip;}
 </style>
 <script>
 function Init()
@@ -64,19 +64,21 @@ function Init()
 
         div.setAttribute("class", "sourceBox");
 
-        var dropDiv = document.createElement('div');
+        var dragDiv = document.createElement('div');
+        var label = document.createTextNode((i + 1) + ": " + sourceNames[i]);
         var labelBox = document.createElement('div');
-        var label = document.createTextNode(sourceNames[i]);
+        var caption = document.createTextNode((i + 1) + ": " + sourceNames[i]);
 
-        dropDiv.setAttribute("id", "source_mapping_" + sourceNames[i]);
-        dropDiv.setAttribute("class", "sourceDrop");
-        dropDiv.setAttribute("ondrop", "Drop(event);");
-        dropDiv.setAttribute("ondragover", "AllowDrop(event);");
+        dragDiv.setAttribute("id", "source_mapping_" + sourceNames[i]);
+        dragDiv.setAttribute("class", "sourceDrag");
+        dragDiv.setAttribute("draggable", "true");
+        dragDiv.setAttribute("ondragstart", "Drag(event);");
         labelBox.setAttribute("class", "label");
 
+        dragDiv.appendChild(caption);
         labelBox.appendChild(label);
         div.appendChild(labelBox);
-        div.appendChild(dropDiv);
+        div.appendChild(dragDiv);
 
         mappingSourceElement.appendChild(div);
     }
@@ -87,21 +89,19 @@ function Init()
 
         div.setAttribute("class", "targetBox");
 
-        var dragDiv = document.createElement('div');
-        var label = document.createTextNode((i + 1) + ": " + targetNames[i]);
+        var dropDiv = document.createElement('div');
         var labelBox = document.createElement('div');
-        var caption = document.createTextNode((i + 1) + ": " + targetNames[i]);
+        var label = document.createTextNode(targetNames[i]);
 
-        dragDiv.setAttribute("id", "target_mapping_" + targetNames[i]);
-        dragDiv.setAttribute("class", "targetDrag");
-        dragDiv.setAttribute("draggable", "true");
-        dragDiv.setAttribute("ondragstart", "Drag(event);");
+        dropDiv.setAttribute("id", "target_mapping_" + targetNames[i]);
+        dropDiv.setAttribute("class", "targetDrop");
+        dropDiv.setAttribute("ondrop", "Drop(event);");
+        dropDiv.setAttribute("ondragover", "AllowDrop(event);");
         labelBox.setAttribute("class", "label");
 
-        dragDiv.appendChild(caption);
         labelBox.appendChild(label);
         div.appendChild(labelBox);
-        div.appendChild(dragDiv);
+        div.appendChild(dropDiv);
 
         mappingTargetElement.appendChild(div);
     }
@@ -113,11 +113,7 @@ function GetSourceNames()
     var sourceNames = ["chapter",
                        "paragraph_default_asdf_jklö",
                        "section",
-                       "subsection",
-                       "a",
-                       "b",
-                       "c",
-                       "d"];
+                       "subsection"];
 
     return sourceNames;
 }
@@ -127,7 +123,11 @@ function GetTargetNames()
     var targetNames = ["chapter",
                        "paragraph_default_asdf_jklö",
                        "section",
-                       "subsection"];
+                       "subsection",
+                       "a",
+                       "b",
+                       "c",
+                       "d"];
 
     return targetNames;
 }
@@ -135,18 +135,7 @@ function GetTargetNames()
 function Drag(event)
 {
     event.dataTransfer.setData("text", event.target.id);
-
-    var sourceNames = GetSourceNames();
-    var sourceNamesLength = sourceNames.length;
-
-    for (var i = 0; i < sourceNamesLength; i++)
-    {
-        if ("source_mapping_" + sourceNames[i] == event.target.parentElement.id)
-        {
-            event.target.parentElement.setAttribute("ondragover", "AllowDrop(event)");
-            break;
-        }
-    }
+    event.dataTransfer.setData("source", event.target.parentElement.id);
 }
 
 function AllowDrop(event)
@@ -159,14 +148,28 @@ function Drop(event)
     event.preventDefault();
     var data = event.dataTransfer.getData("text");
     event.target.appendChild(document.getElementById(data));
-    document.getElementById(data).setAttribute("class", "targetDropped");
+    document.getElementById(data).setAttribute("class", "sourceDropped");
+    
+    var targetNames = GetTargetNames();
+    var targetNamesLength = targetNames.length;
+
+    for (var i = 0; i < targetNamesLength; i++)
+    {
+        console.log("target_mapping_" + targetNames[i] + " vs. " + event.dataTransfer.getData("source"));
+        if ("target_mapping_" + targetNames[i] == event.dataTransfer.getData("source"))
+        {
+            document.getElementById(event.dataTransfer.getData("source")).setAttribute("ondragover", "AllowDrop(event)");
+            break;
+        }
+    }
+
     event.target.setAttribute("ondragover", "");
 }
 </script>
 </head>
 <body onload="Init();">
-<div id="mapping-source"></div>
-<hr style="clear: left;"/>
 <div id="mapping-target"></div>
+<hr style="clear: left;"/>
+<div id="mapping-source"></div>
 </body>
 </html>
