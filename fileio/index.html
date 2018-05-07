@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html version="-//W3C//DTD XHTML 1.1//EN" xmlns="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/1999/xhtml http://www.w3.org/MarkUp/SCHEMA/xhtml11.xsd" xml:lang="en" lang="en">
+  <head>
+    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"/>
+    <!--
+    Copyright (C) 2018 Stephan Kreutzer
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License version 3 or any later version,
+    as published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Affero General Public License 3 for more details.
+
+    You should have received a copy of the GNU Affero General Public License 3
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
+    -->
+    <title>file-i/o</title>
+    <script type="text/javascript" src="scripts/FileIO.js"></script>
+  </head>
+  <body onload="run('files', function(data) { document.getElementById('content').innerText = data; });">
+    <form action="#">
+      <fieldset>
+        <input type="file" id="files" name="files[]"/>
+        <button type="button" onclick="saveFile(document.getElementById('content').innerText);">Save</button>
+      </fieldset>
+    </form>
+    <pre id="content">
+
+    </pre>
+  </body>
+</html>
